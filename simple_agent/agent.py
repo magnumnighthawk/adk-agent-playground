@@ -76,18 +76,30 @@ def get_user_location() -> dict:
     if response:
         return { 'status': 'success', 'data': response }
     
-def get_weather(coordinates: dict) -> dict:
+def get_current_weather(coordinates: dict) -> dict:
     """
-    Fetches the current weather information for the given coordinates using Google Weather API.
+    Fetches ONLY the current moment's weather conditions for the given coordinates.
+    This tool also provides the current time at the location.
+    
+    Use this tool when the user asks about:
+    - Current weather right now
+    - What's the weather like at this moment
+    - Temperature right now
+    - Current time or what time it is
+    
+    DO NOT use this tool when the user asks about:
+    - Daily forecasts
+    - Weather for tomorrow or future days
+    - Sunrise/sunset times
+    - Full day weather overview
+    
     Args:
         coordinates (dict): A dictionary containing latitude and longitude.
             - lat: float
             - lng: float
     Returns:
-        dict: A dictionary containing current weather conditions including temperature, humidity, wind speed, and weather description.
+        dict: A dictionary containing current weather conditions including temperature, humidity, wind speed, weather description, and current time.
     """
-    # Fetch weather information for the given coordinates using Google Weather API
-    # Returns current weather conditions including temperature, humidity, wind speed, and weather description
     response = request(
         "GET",
         "https://weather.googleapis.com/v1/currentConditions:lookup",
@@ -96,10 +108,49 @@ def get_weather(coordinates: dict) -> dict:
     if response.status_code == 200:
         return { 'status': 'success', 'data': response.json() }
 
+def get_daily_forecast(coordinates: dict, days: int = 1) -> dict:
+    """
+    Fetches daily weather forecast including daytime, nighttime conditions, sunrise, and sunset times.
+    
+    Use this tool when the user asks about:
+    - Daily weather forecast
+    - Weather for tomorrow or specific future days
+    - Sunrise/sunset times
+    - Full day weather overview (daytime and nighttime)
+    - Multi-day forecasts
+    - Planning activities based on weather
+    
+    DO NOT use this tool when the user only asks about current weather conditions right now.
+    
+    Args:
+        coordinates (dict): A dictionary containing latitude and longitude.
+            - lat: float
+            - lng: float
+        days (int): Number of days to forecast (default: 1, max: 10)
+    Returns:
+        dict: A dictionary containing daily forecasts with:
+            - Daily temperature highs and lows
+            - Daytime and nighttime conditions
+            - Sunrise and sunset times
+            - Precipitation probability
+            - Weather descriptions for each day
+    """
+    response = request(
+        "GET",
+        "https://weather.googleapis.com/v1/forecast/days:lookup",
+        params={
+            "key": gmp_key, 
+            "location.latitude": coordinates.get("lat"), 
+            "location.longitude": coordinates.get("lng"),
+            "days": days
+        })
+    if response.status_code == 200:
+        return { 'status': 'success', 'data': response.json() }
+
 root_agent = Agent(
     model='gemini-2.0-flash',
     name='expert_weather_assistant',
     description='A helpful assistant that provides weather information to the user.',
     instruction=WEATHER_ASSISTANT_INSTRUCTION,
-    tools=[get_user_location, get_weather]
+    tools=[get_user_location, get_current_weather, get_daily_forecast]
 )
