@@ -72,7 +72,6 @@ def get_user_location() -> dict:
         },
         ];
     """
-    # Fetch user's current location and details like city, country, pincode, administrative zones & coordinates using Google Maps Geocoding API
     response = gmaps.geocode(user_location)
     if response:
         return { 'status': 'success', 'data': response }
