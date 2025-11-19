@@ -7,6 +7,7 @@ from .instructions import WEATHER_ASSISTANT_INSTRUCTION
 
 load_dotenv()
 gmp_key = os.getenv('GMP_API_KEY')
+user_location = os.getenv('USER_LOCATION', 'Manchester, Greater Manchester')
 gmaps = googlemaps.Client(key=gmp_key)
 
 def get_user_location() -> dict:
@@ -72,7 +73,7 @@ def get_user_location() -> dict:
         ];
     """
     # Fetch user's current location and details like city, country, pincode, administrative zones & coordinates using Google Maps Geocoding API
-    response = gmaps.geocode('Manchester, Greater Manchester')
+    response = gmaps.geocode(user_location)
     if response:
         return { 'status': 'success', 'data': response }
     
