@@ -46,6 +46,32 @@ agent_playground/
 └── .env                  # API credentials (not tracked)
 ```
 
+## Deployment
+
+### Building the Container
+
+Build the container image using Podman (or Docker):
+
+```bash
+podman build -t adk-agent-playground:latest .
+```
+
+### Running the Container
+
+Run the container with the required environment variables:
+
+```bash
+podman run --rm -it -p 8080:8080 -e PORT=8080 -e GMP_API_KEY=your_api_key_here adk-agent-playground:latest
+```
+
+Or use a different port:
+
+```bash
+podman run --rm -it -p 3000:3000 -e PORT=3000 -e GMP_API_KEY=your_api_key_here adk-agent-playground:latest
+```
+
+**Note:** Make sure to replace `your_api_key_here` with your actual Google Maps Platform API key.
+
 ## Future Agents
 
 More agents will be added as experiments continue.
