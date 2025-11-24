@@ -75,3 +75,9 @@ podman run --rm -it -p 3000:3000 -e PORT=3000 -e GMP_API_KEY=your_api_key_here a
 ## Future Agents
 
 More agents will be added as experiments continue.
+
+## Agent spec templates
+
+This repository now includes a reusable agent spec template in `simple_agent/specs/agent_template.yaml`.
+
+You can copy the template to create new agents and expand the spec with additional tool definitions or example conversations.

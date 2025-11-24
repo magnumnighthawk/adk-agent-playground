@@ -1,0 +1,43 @@
+name: example_weather_agent
+version: 0.1.0
+model:
+  name: gemini-2.0-flash
+  temperature: 0.0
+  max_tokens: 1024
+instruction: |
+  You are an assistant that provides weather information to the user. Use the tools defined in this spec to fetch location and weather data. Always call the location tool first to determine coordinates.
+tools:
+  - name: get_user_location
+    description: "Resolve the user's address or default location and return coordinates and address components."
+    inputs:
+      - name: user_location
+        type: string
+        required: false
+  - name: get_current_weather
+    description: "Return current weather conditions (temperature, humidity, wind, description) for given coordinates."
+    inputs:
+      - name: lat
+        type: number
+      - name: lng
+        type: number
+  - name: get_daily_forecast
+    description: "Return daily forecast for the next N days for given coordinates."
+    inputs:
+      - name: lat
+        type: number
+      - name: lng
+        type: number
+      - name: days
+        type: integer
+        default: 1
+examples:
+  - user: "What's the weather like right now?"
+    steps:
+      - call: get_user_location
+      - call: get_current_weather
+  - user: "Will it rain tomorrow in my city?"
+    steps:
+      - call: get_user_location
+      - call: get_daily_forecast
+        with:
+          days: 2
